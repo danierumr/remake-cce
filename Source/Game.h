@@ -22,6 +22,7 @@ public:
     enum class GameScene
     {
         Menu,
+        TestArea,
         Level1
     };
 

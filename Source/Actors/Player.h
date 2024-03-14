@@ -9,7 +9,7 @@
 class Player : public Actor
 {
 public:
-    Player(Scene* scene, float forwardSpeed = 2500.0f, int lives = 3);
+    Player(Scene* scene, float forwardSpeed = 250.0f, int lives = 3);
 
     void OnProcessInput(const Uint8* keyState) override;
     void OnUpdate(float deltaTime) override;

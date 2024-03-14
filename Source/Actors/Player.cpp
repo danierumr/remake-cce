@@ -17,7 +17,6 @@ Player::Player(Scene *scene, const float forwardSpeed, int lives)
 
     // Draw Component
     mDrawComponent = new DrawAnimatedComponent(this, "../Assets/Sprites/Capivaristo/Capivaristo.png", "../Assets/Sprites/Capivaristo/Capivaristo.json");
-    mDrawComponent = new DrawAnimatedComponent(this, "../Assets/Sprites/Capivaristo/Capivaristo.png", "../Assets/Sprites/Capivaristo/Capivaristo.json");
     mDrawComponent->AddAnimation("idle", {1,0});
     mDrawComponent->AddAnimation("run", {4,5,6,5});
     mDrawComponent->AddAnimation("jump", {4});
@@ -33,6 +32,16 @@ Player::Player(Scene *scene, const float forwardSpeed, int lives)
     mBody = new AABBColliderComponent(this, 0, 0, 32, 32, ColliderLayer::Player);
 
     mShoe = new AABBColliderComponent(this, 0, 0, 32, 32, ColliderLayer::Shoe);
+
+
+
+    // Debug
+    auto v1 = mBody->GetMin();
+    auto v4 = mBody->GetMax();
+    Vector2 v2 = Vector2(v4.x, v1.y);
+    Vector2 v3 = Vector2(v1.x, v4.y);
+    // Put them into array
+    mDrawDebugComponent = new DrawPolygonComponent(this, { v1,v2, v4, v3 });
 }
 
 void Player::OnProcessInput(const Uint8 *keyState)
@@ -41,12 +50,11 @@ void Player::OnProcessInput(const Uint8 *keyState)
     // Movement
     Vector2 velocity = mRigidBodyComponent->GetVelocity();
     bool pressedMovementKey = false;
-    velocity.x = 0.0f;
+    //velocity.x = 0.0f;
     // Move right
     if(keyState[SDL_SCANCODE_D])
     {
-        mRigidBodyComponent->ApplyForce(Vector2(mForwardSpeed,0));
-        mRotation = 0.0f;
+        //mRotation = 0.0f;
 
         pressedMovementKey = true;
         velocity.x = 1.0f;
@@ -54,8 +62,7 @@ void Player::OnProcessInput(const Uint8 *keyState)
     // Move left
     if(keyState[SDL_SCANCODE_A])
     {
-        mRigidBodyComponent->ApplyForce(Vector2(-1 * mForwardSpeed,0));
-        mRotation = Math::Pi;
+        //mRotation = Math::Pi;
 
         pressedMovementKey = true;
         velocity.x = -1.0f;
@@ -63,16 +70,12 @@ void Player::OnProcessInput(const Uint8 *keyState)
     // Move up
     if(keyState[SDL_SCANCODE_W])
     {
-        mRigidBodyComponent->ApplyForce(Vector2(0,-1 * mForwardSpeed));
-
         pressedMovementKey = true;
         velocity.y = -1.0f;
     }
     // Move down
     if(keyState[SDL_SCANCODE_S])
     {
-        mRigidBodyComponent->ApplyForce(Vector2(0,mForwardSpeed));
-
         pressedMovementKey = true;
         velocity.y = 1.0f;
     }
@@ -101,7 +104,6 @@ void Player::OnProcessInput(const Uint8 *keyState)
 
 void Player::OnUpdate(float deltaTime)
 {
-
     // Attack
     if(mIsAttacking) {
         mAttackTimer += deltaTime;
@@ -115,6 +117,16 @@ void Player::OnUpdate(float deltaTime)
     UpdateAnimations();
 
     mRigidBodyComponent->SetVelocity(Vector2::Zero);
+
+
+
+    //Debug
+    auto v1 = mBody->GetMin();
+    auto v4 = mBody->GetMax();
+    Vector2 v2 = Vector2(v4.x, v1.y);
+    Vector2 v3 = Vector2(v1.x, v4.y);
+    std::vector<Vector2> vertices = { v1,v2, v4, v3 };
+    mDrawDebugComponent->SetVertices(vertices);
 }
 
 
@@ -134,6 +146,62 @@ void Player::UpdateAnimations()
         }
         else {
             mDrawComponent->SetAnimation("idle");
+        }
+    }
+}
+
+void Player::DetectCollision()
+{
+    // Check collisions against others shoes and walls
+    std::vector<AABBColliderComponent *> shoeColliders;
+    for (auto* collider : mScene->GetGame()->GetColliders(ColliderLayer::Shoe)) {
+        shoeColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));
+    }
+    for (auto* collider : mScene->GetGame()->GetColliders(ColliderLayer::Wall)) {
+        shoeColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));
+    }
+    // Shoe collision
+    mShoe->DetectCollision(mRigidBodyComponent, shoeColliders);
+
+
+    // Attack
+    if(mIsAttacking) {
+        // Enemies
+        std::vector<AABBColliderComponent *> punchColliders;
+        for (auto* collider : mScene->GetGame()->GetColliders(ColliderLayer::Enemy)) {
+            punchColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));
+        }
+
+        mPunch->DetectCollision(mRigidBodyComponent, punchColliders);
+    }
+
+}
+
+void Player::OnCollision(std::vector<AABBColliderComponent::Overlap> &responses)
+{
+    Vector2 velocity = mRigidBodyComponent->GetVelocity();
+
+    for(auto response : responses) {
+
+
+        // Don't know what this do
+        if(response.side == CollisionSide::Left || response.side == CollisionSide::Right)
+        {
+            if(velocity.y > .0f) {
+                mRigidBodyComponent->SetVelocity(Vector2(velocity.x, mForwardSpeed));
+            }
+            else if(velocity.y < .0f) {
+                mRigidBodyComponent->SetVelocity(Vector2(velocity.x, -mForwardSpeed));
+            }
+        }
+        else if(response.side == CollisionSide::Top || response.side == CollisionSide::Down)
+        {
+            if(velocity.x > .0f) {
+                mRigidBodyComponent->SetVelocity(Vector2(mForwardSpeed, velocity.y));
+            }
+            else if(velocity.x < .0f) {
+                mRigidBodyComponent->SetVelocity(Vector2(-mForwardSpeed, velocity.y));
+            }
         }
     }
 }

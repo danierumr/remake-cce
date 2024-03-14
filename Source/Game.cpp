@@ -19,6 +19,7 @@
 #include "Components/DrawComponents/DrawSpriteComponent.h"
 #include "Scenes/Menu.h"
 #include "Scenes/Level1.h"
+#include "Scenes/TestArea.h"
 
 Game::Game(int windowWidth, int windowHeight)
             :mWindow(nullptr)
@@ -89,6 +90,11 @@ void Game::InitializeActors()
     {
         case GameScene::Menu:
             mScene = new Menu(this);
+            mScene->Load();
+            break;
+
+        case GameScene::TestArea:
+            mScene = new TestArea(this);
             mScene->Load();
             break;
 

@@ -33,7 +33,7 @@ void Menu::ProcessInput(const Uint8 *keyState)
 {
     if(keyState[SDL_SCANCODE_SPACE])
     {
-        mGame->SetScene(Game::GameScene::Level1);
+        mGame->SetScene(Game::GameScene::TestArea);
     }
     else if(keyState[SDL_SCANCODE_ESCAPE])
     {

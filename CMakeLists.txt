@@ -44,6 +44,9 @@ add_executable(${PROJECT_NAME}
         Source/Components/DrawComponents/DrawTileComponent.cpp
         Source/Actors/Player.cpp
         Source/Actors/Player.h
+        Source/Scenes/TestArea.cpp
+        Source/Scenes/TestArea.h
+        Source/Actors/Wall.cpp
 )
 
 

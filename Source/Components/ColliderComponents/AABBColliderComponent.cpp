@@ -106,7 +106,7 @@ void AABBColliderComponent::DetectCollision(RigidBodyComponent *rigidBody, std::
         if(Intersect(*target))
         {
             Overlap minOverlap = GetMinOverlap(target);
-            if(target->GetLayer() == ColliderLayer::Wall || target->GetLayer() == ColliderLayer::Bush) {
+            if(target->GetLayer() == ColliderLayer::Wall || target->GetLayer() == ColliderLayer::Shoe) {
                 ResolveCollisions(rigidBody, minOverlap);
             }
 

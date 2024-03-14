@@ -28,7 +28,7 @@ FSMComponent::~FSMComponent()
 
 void FSMComponent::Start(const std::string &startState)
 {
-    // TODO [Parte 2.1]: https://ufv-inf216.lucasnferreira.com/p5-pacman
+
     mIsRunning=true;
     SetState(startState);
 }
@@ -40,8 +40,7 @@ void FSMComponent::SetState(const std::string &stateName)
         std::cout << "state rejected: " << stateName << std::endl;
         return;
     }
-    //if(stateName == "scatter"){std::cout << "scatter " << std::endl;}
-    // TODO [Parte 2.2]: https://ufv-inf216.lucasnferreira.com/p5-pacman
+    //if(stateName == "scatter"){std::cout << "scatter " << std::endl;
     mStates[mCurrentState]->Exit();
     mStateTime=0;
     mCurrentState = stateName;
@@ -50,7 +49,7 @@ void FSMComponent::SetState(const std::string &stateName)
 
 void FSMComponent::Update(float deltaTime)
 {
-    // TODO [Parte 2.3]: https://ufv-inf216.lucasnferreira.com/p5-pacman
+
     if(!mIsRunning){ return;}
     mStateTime += deltaTime;
     mStates[mCurrentState]->Update(deltaTime);
@@ -60,6 +59,5 @@ void FSMComponent::Update(float deltaTime)
 
 void FSMComponent::AddState(std::string &stateName, FSMState *state)
 {
-    // TODO [Parte 2.4]: https://ufv-inf216.lucasnferreira.com/p5-pacman
     mStates[stateName]=state;
 }

@@ -155,7 +155,8 @@ void Player::DetectCollision()
     // Check collisions against others shoes and walls
     std::vector<AABBColliderComponent *> shoeColliders;
     for (auto* collider : mScene->GetGame()->GetColliders(ColliderLayer::Shoe)) {
-        shoeColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));
+        if(mShoe != collider)
+            shoeColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));
     }
     for (auto* collider : mScene->GetGame()->GetColliders(ColliderLayer::Wall)) {
         shoeColliders.emplace_back(dynamic_cast<AABBColliderComponent *>(collider));

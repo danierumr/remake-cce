@@ -22,6 +22,9 @@ private:
 
     Vector2 mCamPos;
 
-    class Wall *mWall;
+    // Barriers
+    class Wall *mWallMiddle;
+    class Wall *mWallLeft;
+    class Wall *mWallRight;
 
 };
